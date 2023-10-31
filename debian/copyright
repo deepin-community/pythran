@@ -1,22 +1,312 @@
 Format: https://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
-Upstream-Name: template-repository
-Source: https://github.com/deepin-community/template-repository
+Upstream-Name: pythran
+Upstream-Contact: Serge Guelton <serge.guelton@telecom-bretagne.eu>
+Source: https://github.com/serge-sans-paille/pythran
+Files-Excluded: third_party docs/papers logo.svg
+Comment:
+ The "third_party" directory contains vendored copies of boost and xsimd.
+ The "docs/papers" directory contains documentation not used by the package.
+ The "logo.svg" file is under a CC-NC license.
 
 Files: *
-Copyright: 2023 Tsic404 <liuheng@deepin.org>
-License: GPL-2+
- This package is free software; you can redistribute it and/or modify
+Copyright: 2012, HPC Project and Serge Guelton
+License: BSD-3-clause
+
+Files: pythran/cxxgen.py
+Copyright: 2008, Andreas Kloeckner
+License: Expat
+Comment:
+ According to upstream comments in the source file, this file is a derivative
+ from two sources: Python packages "cgen" and "codepy", both by Andreas
+ Kloeckner and under MIT license. Upstream comments in the source file:
+ # Serge Guelton: The licensing terms are not set in the source package, but
+ # pypi[1] says the software is under the MIT license, so I reproduce it here
+ # [1] http://pypi.python.org/pypi/cgen
+ .
+ # copy-pasted from codepy.bpl, which is a real mess...
+ # the original code was under MIT License
+ # cf. http://pypi.python.org/pypi/codepy
+ # so I reproduce it here
+
+Files: pythran/graph.py
+Copyright: 2004-2021, NetworkX Developers
+License: BSD-3-clause
+
+Files: pythran/magic.py
+Copyright: 2010-2011, IPython Development Team
+License: BSD-3-clause
+
+Files: pythran/pythonic/include/numpy/random/generator.hpp
+Copyright: 2014 Melissa O'Neill <oneill@pcg-random.org>
+License: Apache-2.0
+
+Files: pythran/pythonic/numpy/fft/pocketfft.hpp
+Copyright: 2010-2019 Max-Planck-Society
+           2019 Peter Bell
+           2003, 2007-14 Matteo Frigo
+           2003, 2007-14 Massachusetts Institute of Technology
+License: BSD-3-clause
+
+Files: pythran/pythonic/patch/complex
+Copyright:
+ 2009-2014, Saleem Abdulrasool
+ 2009-2014, Dimitry Andric
+ 2009-2014, Holger Arnold
+ 2009-2014, Ruben Van Boxem
+ 2009-2014, David Chisnall
+ 2009-2014, Marshall Clow
+ 2009-2014, Bill Fisher
+ 2009-2014, Matthew Dempsky
+ 2009-2014, Google Inc.
+ 2009-2014, Howard Hinnant
+ 2009-2014, Hyeon-bin Jeong
+ 2009-2014, Argyrios Kyrtzidis
+ 2009-2014, Bruce Mitchener, Jr.
+ 2009-2014, Michel Morin
+ 2009-2014, Andrew Morrow
+ 2009-2014, Arvid Picciani
+ 2009-2014, Bjorn Reese
+ 2009-2014, Nico Rieck
+ 2009-2014, Jonathan Sauer
+ 2009-2014, Craig Silverstein
+ 2009-2014, Richard Smith
+ 2009-2014, Joerg Sonnenberger
+ 2009-2014, Stephan Tolksdorf
+ 2009-2014, Michael van der Westhuizen
+ 2009-2014, Klaas de Vries
+ 2009-2014, Zhang Xiongpang
+ 2009-2014, Xing Xue
+ 2009-2014, Zhihao Yuan
+ 2009-2014, Jeffrey Yasskin
+License: BSD-3-clause-Illinois and Expat
+Comment:
+ The file belongs to llvm's "libcxx". Upstream included the file in
+ October 2014:
+ https://github.com/serge-sans-paille/pythran/commit/7d9dcc3a55269e454df83429597802c5ff2d3b0e
+ The closest libcxx release is RELEASE_350,from September 2014:
+ https://github.com/llvm-mirror/libcxx/tree/svn-tags/RELEASE_350/final
+ Copyright attribution is based on the "LICENSE.TXT" file for that
+ release, which refers to the "CREDITS.TXT" file for the copyright
+ holders:
+ > Copyright (c) 2009-2014 by the contributors listed in CREDITS.TXT
+
+Files: pythran/pythonic/utils/pdqsort.hpp
+Copyright: 2015 Orson Peters
+License: zlib
+
+Files: pythran/tests/cases/stone.py
+Copyright: 1998 Painter Engineering, Inc.
+License: Other-whetstone
+
+Files: pythran/tests/scikit-image/_greyreconstruct.py
+Copyright: 2003-2009 Massachusetts Institute of Technology
+           2009-2011 Broad Institute
+License: GPL-2.0 and BSD-3-clause
+
+Files: pythran/tests/scipy/hausdorff.py
+Copyright: Tyler Reddy, Richard Gowers, and Max Linke, 2016
+License: BSD-3-clause
+
+Files: pythran/unparse.py
+Copyright: 2008 by Armin Ronacher
+License: PSF-2.0
+Comment:
+ Upstream note:
+ > This code is extracted from the python source tree, and thus under the PSF
+ > License.
+ The file contains parts of cpython's "Lib/ast.py" file. Copyright attribution
+ and license has been added based on that file:
+ https://github.com/python/cpython/blob/3.9/Lib/ast.py
+
+Files: debian/*
+Copyright: 2021, Diego M. Rodriguez <diego@moreda.io>
+License: BSD-3-clause
+
+License: BSD-3-clause
+ Redistribution and use in source and binary forms, with or without
+ modification, are permitted provided that the following conditions are met:
+ .
+     Redistributions of source code must retain the above copyright notice, this
+     list of conditions and the following disclaimer.
+ .
+     Redistributions in binary form must reproduce the above copyright notice,
+     this list of conditions and the following disclaimer in the documentation
+     and/or other materials provided with the distribution.
+ .
+     Neither the name of HPCProject, Serge Guelton nor the names of its
+     contributors may be used to endorse or promote products derived from this
+     software without specific prior written permission.
+ .
+ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+ ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+ WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
+ FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+ DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+ SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+ CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+ OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+License: Expat
+ Permission is hereby granted, free of charge, to any person obtaining a copy
+ of this software and associated documentation files (the "Software"), to deal
+ in the Software without restriction, including without limitation the rights
+ to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ copies of the Software, and to permit persons to whom the Software is
+ furnished to do so, subject to the following conditions:
+ .
+ The above copyright notice and this permission notice shall be included in
+ all copies or substantial portions of the Software.
+ .
+ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ SOFTWARE.
+
+License: Apache-2.0
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
+ .
+     http://www.apache.org/licenses/LICENSE-2.0
+ .
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or
+ implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
+ .
+ For additional information about the PCG random number generation
+ scheme,
+ including its license and other licensing options, visit
+ .
+       http://www.pcg-random.org
+
+License: zlib
+ This software is provided 'as-is', without any express or implied warranty.
+ In no event will the authors be held liable for any damages arising from the
+ use of this software.
+ .
+ Permission is granted to anyone to use this software for any purpose,
+ including commercial applications, and to alter it and redistribute it freely,
+ subject to the following restrictions:
+ .
+ 1. The origin of this software must not be misrepresented; you must not claim
+    that you wrote the original software. If you use this software in a product,
+    an acknowledgment in the product documentation would be appreciated but is
+    not required.
+ .
+ 2. Altered source versions must be plainly marked as such, and must not be
+    misrepresented as being the original software.
+ .
+ 3. This notice may not be removed or altered from any source distribution.
+
+License: Other-whetstone
+ Permission is granted to use, duplicate, and
+ publish this text and program as long as it
+ includes this entire comment block and limited
+ rights reference.
+
+License: GPL-2.0
+ This program is free software; you can redistribute it and/or modify
  it under the terms of the GNU General Public License as published by
  the Free Software Foundation; either version 2 of the License, or
  (at your option) any later version.
  .
- This package is distributed in the hope that it will be useful,
- but WITHOUT ANY WARRANTY; without even the implied warranty of
- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- GNU General Public License for more details.
+ On Debian systems, the complete text of version 2 of the GNU General
+ Public License can be found in '/usr/share/common-licenses/GPL-2'
+
+License: PSF-2.0
+ 1. This LICENSE AGREEMENT is between the Python Software Foundation
+ ("PSF"), and the Individual or Organization ("Licensee") accessing and
+ otherwise using this software ("Python") in source or binary form and
+ its associated documentation.
  .
- You should have received a copy of the GNU General Public License
- along with this program. If not, see <https://www.gnu.org/licenses/>
+ 2. Subject to the terms and conditions of this License Agreement, PSF hereby
+ grants Licensee a nonexclusive, royalty-free, world-wide license to reproduce,
+ analyze, test, perform and/or display publicly, prepare derivative works,
+ distribute, and otherwise use Python alone or in any derivative version,
+ provided, however, that PSF's License Agreement and PSF's notice of copyright,
+ i.e., "Copyright (c) 2001, 2002, 2003, 2004, 2005, 2006, 2007, 2008, 2009, 2010,
+ 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021 Python Software Foundation;
+ All Rights Reserved" are retained in Python alone or in any derivative version
+ prepared by Licensee.
  .
- On Debian systems, the complete text of the GNU General
- Public License version 2 can be found in "/usr/share/common-licenses/GPL-2".
+ 3. In the event Licensee prepares a derivative work that is based on
+ or incorporates Python or any part thereof, and wants to make
+ the derivative work available to others as provided herein, then
+ Licensee hereby agrees to include in any such work a brief summary of
+ the changes made to Python.
+ .
+ 4. PSF is making Python available to Licensee on an "AS IS"
+ basis.  PSF MAKES NO REPRESENTATIONS OR WARRANTIES, EXPRESS OR
+ IMPLIED.  BY WAY OF EXAMPLE, BUT NOT LIMITATION, PSF MAKES NO AND
+ DISCLAIMS ANY REPRESENTATION OR WARRANTY OF MERCHANTABILITY OR FITNESS
+ FOR ANY PARTICULAR PURPOSE OR THAT THE USE OF PYTHON WILL NOT
+ INFRINGE ANY THIRD PARTY RIGHTS.
+ .
+ 5. PSF SHALL NOT BE LIABLE TO LICENSEE OR ANY OTHER USERS OF PYTHON
+ FOR ANY INCIDENTAL, SPECIAL, OR CONSEQUENTIAL DAMAGES OR LOSS AS
+ A RESULT OF MODIFYING, DISTRIBUTING, OR OTHERWISE USING PYTHON,
+ OR ANY DERIVATIVE THEREOF, EVEN IF ADVISED OF THE POSSIBILITY THEREOF.
+ .
+ 6. This License Agreement will automatically terminate upon a material
+ breach of its terms and conditions.
+ .
+ 7. Nothing in this License Agreement shall be deemed to create any
+ relationship of agency, partnership, or joint venture between PSF and
+ Licensee.  This License Agreement does not grant permission to use PSF
+ trademarks or trade name in a trademark sense to endorse or promote
+ products or services of Licensee, or any third party.
+ .
+ 8. By copying, installing or otherwise using Python, Licensee
+ agrees to be bound by the terms and conditions of this License
+ Agreement.
+
+License: BSD-3-clause-Illinois
+ University of Illinois/NCSA
+ Open Source License
+ .
+ Copyright (c) 2009-2014 by the contributors listed in CREDITS.TXT
+ .
+ All rights reserved.
+ .
+ Developed by:
+ .
+     LLVM Team
+ .
+     University of Illinois at Urbana-Champaign
+ .
+     http://llvm.org
+ .
+ Permission is hereby granted, free of charge, to any person obtaining a copy of
+ this software and associated documentation files (the "Software"), to deal with
+ the Software without restriction, including without limitation the rights to
+ use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies
+ of the Software, and to permit persons to whom the Software is furnished to do
+ so, subject to the following conditions:
+ .
+     * Redistributions of source code must retain the above copyright notice,
+       this list of conditions and the following disclaimers.
+ .
+     * Redistributions in binary form must reproduce the above copyright notice,
+       this list of conditions and the following disclaimers in the
+       documentation and/or other materials provided with the distribution.
+ .
+     * Neither the names of the LLVM Team, University of Illinois at
+       Urbana-Champaign, nor the names of its contributors may be used to
+       endorse or promote products derived from this Software without specific
+       prior written permission.
+ .
+ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS
+ FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL THE
+ CONTRIBUTORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS WITH THE
+ SOFTWARE.

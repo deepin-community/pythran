@@ -1,0 +1,22 @@
+From: "Diego M. Rodriguez" <diego@moreda.io>
+Date: Fri, 24 Sep 2021 14:48:47 +0200
+Subject: Use the debian copy of requirejs, mathjax in doc
+
+Use the files from the requirejs and mathjax debian packages instead of
+using a CDN, in order to avoid the "privacy-breach-generic" lintian warning.
+---
+ docs/conf.py | 4 ++++
+ 1 file changed, 4 insertions(+)
+
+Index: pythran/docs/conf.py
+===================================================================
+--- pythran.orig/docs/conf.py	2023-01-08 14:14:58.213662774 +0100
++++ pythran/docs/conf.py	2023-01-08 14:14:58.205662693 +0100
+@@ -282,3 +282,7 @@
+ # Output file base name for HTML help builder.
+ htmlhelp_basename = 'Pythrandoc'
+ 
++# Use the debian copy of requirejs and mathjax instead of cdn.
++nbsphinx_requirejs_path = 'file:///usr/share/javascript/requirejs/require.min.js'
++nbsphinx_requirejs_options = {'crossorigin': 'anonymous'}
++mathjax_path = 'file:///usr/share/javascript/mathjax/MathJax.js?config=TeX-AMS-MML_HTMLorMML'

@@ -1,0 +1,10 @@
+Document: python-pythran-doc
+Title: ahead of time compiler for Python
+Author: Serge Guelton
+Abstract: Documentation for pythran, an ahead of time compiler for a
+ subset of the Python language, with a focus on scientific computing.
+Section: Programming/Python
+
+Format: HTML
+Index: /usr/share/doc/python-pythran-doc/html/index.html
+Files: /usr/share/doc/python-pythran-doc/html/*

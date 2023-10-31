@@ -1,0 +1,20 @@
+pythran for Debian
+------------------
+
+The pythran package depends on a generic BLAS implementation, and by
+default it is configured to auto-detect the BLAS library to use (via
+upstream's configuration value "blas" for the "blas" entry in the
+"compiler" section [1], which makes use of numpy for determining the
+available implementations).
+
+In order to use a specific BLAS implementation:
+1. install the desired implementation [2]
+2. optionally, update the ".pythranrc" file by setting the
+   corresponding value to the "blas" entry (validd values are "none",
+   "pythran-openblas", "blas", "openblas", "atlas" or "mkl") in order
+   to bypass the automatic detection.
+
+[1] https://pythran.readthedocs.io/en/latest/MANUAL.html#compiler
+[2] https://wiki.debian.org/DebianScience/LinearAlgebraLibraries
+
+ -- Diego M. Rodriguez <diego@moreda.io>  Mon, 22 Nov 2021 14:15:45 +0100

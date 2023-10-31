@@ -1,4 +1,69 @@
 #!/usr/bin/make -f
 
+# export DH_VERBOSE=1
+
+include /usr/share/dpkg/pkg-info.mk
+include /usr/share/dpkg/architecture.mk
+
+export PYBUILD_NAME=pythran
+
+export PYBUILD_TEST_PYTEST=1
+# Copy the test package, as it is inside the root package (pythran.tests).
+export PYBUILD_BEFORE_TEST=cp -r {dir}/pythran/tests {build_dir}/pythran
+# Cleanup the test package, along with files that are generated during
+# tests and not needed by the final package.
+export PYBUILD_AFTER_TEST=rm -r {build_dir}/pythran/tests; rm -f {build_dir}/test_*.so; rm -f {build_dir}/_configtest*
+# Llimit the testing to one file, as the full test suite is very time
+# consuming.
+export PYBUILD_TEST_ARGS=pythran/tests/test_base.py
+# Disable copying third party libraries during build and install.
+export PYBUILD_BUILD_ARGS=build_py --no-boost --no-xsimd
+export PYBUILD_INSTALL_ARGS=build_py --no-boost --no-xsimd
+
+empty :=
+space := $(empty)$(empty)
+
+# use XSIMD only on supported architectures
+XSIMD_ARCH_LIST := amd64 arm64 i386
+ifneq (,$(findstring $(space)$(DEB_HOST_ARCH)$(space), $(space)$(XSIMD_ARCH_LIST)$(space)))
+  XSIMD_CONFIG=-DUSE_XSIMD
+else
+  XSIMD_CONFIG=
+endif
+
+
 %:
-	dh $@
+	dh $@ --with python3,sphinxdoc --buildsystem=pybuild
+
+execute_after_dh_clean:
+	rm -f docs/AUTHORS.rst docs/LICENSE.rst docs/Changelog.rst docs/SUPPORT.rst docs/index.rst
+
+override_dh_auto_test:
+ifeq ($(DEB_HOST_ARCH),i386)
+	CXXFLAGS="$(XSIMD_CONFIG) -march=native" dh_auto_test
+else
+	CXXFLAGS=$(XSIMD_CONFIG) dh_auto_test
+endif
+
+execute_before_dh_sphinxdoc-indep:
+ifeq (,$(findstring nodoc, $(DEB_BUILD_OPTIONS)))
+	PYTHONPATH=. sphinx-build -b html -N docs/ $(CURDIR)/debian/python-pythran-doc/usr/share/doc/python-pythran-doc/html
+endif
+
+# Override compressing the font files, as they are symlinked by d/*.links
+override_dh_compress:
+	dh_compress -X.eot -X.otf -X.ttf -X.woff -X.woff2
+
+# Target for regenerating the manpages.
+# This target is intended to be executed manually, and requires
+# `help2man` to be installed.
+help2man:
+	for script in pythran pythran-config; do \
+	help2man --no-info \
+		--name="part of pythran: ahead of time compiler for Python" \
+		--version-string=$(DEB_VERSION_UPSTREAM) \
+		-o debian/$${script}.1 \
+		--no-discard-stderr \
+        --include debian/python3-pythran.manpages.include \
+        $${script}; \
+	done
