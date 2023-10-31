@@ -1,0 +1,13 @@
+Tests: upstream-tests, pythran-test-cases
+Depends: @, python3-all, python3-pytest, python3-scipy, libatlas-base-dev
+
+# Needs root for update-alternatives.
+Tests: pythran-openblas
+Restrictions: needs-root
+Depends: @, python3-all, python3-pytest, python3-scipy, libopenblas-dev
+Architecture: amd64 arm64 armhf i386 powerpc ppc64el ppc64 kfreebsd-i386 kfreebsd-amd64 mips64el riscv64 sparc64 s390x
+
+# Needs root for update-alternatives.
+Tests: pythran-blas
+Restrictions: needs-root
+Depends: @, python3-all, python3-pytest, python3-scipy, libblas-dev

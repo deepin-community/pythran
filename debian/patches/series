@@ -1,0 +1,5 @@
+0002-Exclude-pythran-pythonic-patch-README.rst.patch
+0003-Use-the-debian-copy-of-requirejs-in-doc.patch
+0004-Enhance-atlas-auto-detection.patch
+0005-Disable-jupyter-based-documentation-examples.patch
+config-linux.patch

@@ -1,0 +1,50 @@
+#!/bin/sh
+#
+# This autopkgtest runs a minimal  only specific test files instead of the full
+# suite, as upstream test suite is very time consuming.
+
+set -e -u
+
+# use XSIMD acceleration on supported architectures
+CXXFLAGS=
+DEB_HOST_ARCH=$( dpkg-architecture -qDEB_HOST_ARCH )
+case " amd64 arm64 i386 " in
+  *\ ${DEB_HOST_ARCH}\ *)  export CXXFLAGS=-DUSE_XSIMD;;
+esac
+
+# Set blas as the alternative.
+MACHINE=$(dpkg-architecture -qDEB_HOST_MULTIARCH)
+BLASLIB=$(update-alternatives --list libblas.so.3-$MACHINE | grep "blas/")
+update-alternatives --set libblas.so.3-$MACHINE $BLASLIB
+
+TEST_FILES="test_base.py test_numpy_func3.py"
+# * test_base: basic tests.
+# * test_numpy_func3: suggested during initial sponsorship, for
+#   additional blas-specific coverage.
+
+# Additionally, some tests are excluded manually, based on the output
+# of "pytest --durations=0".
+#
+# TestNumpyFunc3.test_interp is flakey at levels 6,7,8
+# especially with complex numbers (_7c etc) and depending on BLAS implementation
+# i386 is flakey also in the real variant, so skip all _6,_7,_8
+# see https://github.com/serge-sans-paille/pythran/issues/2000
+TEST_SELECTOR="not test__rbfinterp and not test_shallow_water and not test_compute_subpix_2d_gaussian2 and not ( test_interp_6 or interp_7 or test_interp_8)"
+
+DEB_HOST_ARCH=$(dpkg-architecture -qDEB_HOST_ARCH)
+if [ "${DEB_HOST_ARCH}" = "i386" ] ; then
+    export CXXFLAGS="${CXXFLAGS} -march=native"
+fi
+
+# Copy upstream "pythran.tests" to a new package, as it is not part of
+# the installed packages but the test files import from it.
+cp -r pythran/tests $AUTOPKGTEST_TMP/pythran_tests
+cd $AUTOPKGTEST_TMP/pythran_tests
+find . -type f -name "*.py" -print0 | xargs -0 sed -i 's|pythran.tests|pythran_tests|g'
+
+for py in $(py3versions -s 2>/dev/null); do
+    echo "Running testsuite with $py using CXXFLAGS=${CXXFLAGS}"
+    for test_file in $TEST_FILES; do
+        $py -m pytest $test_file -k "${TEST_SELECTOR}"
+    done
+done

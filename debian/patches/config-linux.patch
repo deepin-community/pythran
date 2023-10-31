@@ -1,0 +1,13 @@
+Index: pythran/pythran/pythran-linux.cfg
+===================================================================
+--- pythran.orig/pythran/pythran-linux.cfg	2023-01-16 03:54:31.428761334 +0100
++++ pythran/pythran/pythran-linux.cfg	2023-01-18 12:09:14.787199773 +0100
+@@ -4,7 +4,7 @@
+ include_dirs=
+ libs=
+ library_dirs=
+-cflags=-std=c++11 -fno-math-errno -fvisibility=hidden -fno-wrapv -Wno-unused-function -Wno-int-in-bool-context -Wno-unknown-warning-option
++cflags=-std=c++11 -fno-math-errno -fvisibility=hidden -fno-wrapv -Wno-unused-function -Wno-int-in-bool-context
+ ldflags=-fvisibility=hidden -Wl,-strip-all
+ blas=blas
+ CC=
