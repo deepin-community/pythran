@@ -2,10 +2,7 @@
 #define PYTHONIC_NUMPY_ARGSORT_HPP
 
 #include "pythonic/include/numpy/argsort.hpp"
-
-#include "pythonic/utils/functor.hpp"
-#include "pythonic/utils/pdqsort.hpp"
-#include "pythonic/types/ndarray.hpp"
+#include "pythonic/numpy/ndarray/sort.hpp"
 
 PYTHONIC_NS_BEGIN
 
@@ -13,14 +10,14 @@ namespace numpy
 {
   template <class E>
   types::ndarray<long, types::array<long, 1>> argsort(E const &expr,
-                                                      types::none_type)
+                                                      types::none_type, types::none_type)
   {
     auto out = functor::array{}(expr).flat();
     return argsort(out);
   }
 
-  template <class T, class pS>
-  types::ndarray<long, pS> argsort(types::ndarray<T, pS> const &a, long axis)
+  template <class T, class pS, class Sorter>
+  types::ndarray<long, pS> _argsort(types::ndarray<T, pS> const &a, long axis, Sorter sorter)
   {
     constexpr auto N = std::tuple_size<pS>::value;
     if (axis < 0)
@@ -38,7 +35,7 @@ namespace numpy
         // fill with the original indices
         std::iota(iter_indices, iter_indices + step, 0L);
         // sort the index using the value from a
-        pdqsort(iter_indices, iter_indices + step,
+        sorter(iter_indices, iter_indices + step,
                 [a_base](long i1, long i2) { return a_base[i1] < a_base[i2]; });
       }
     } else {
@@ -50,13 +47,13 @@ namespace numpy
       const long stepper = step / out_shape[axis];
       const long n = flat_size / out_shape[axis];
       long ith = 0, nth = 0;
-      std::unique_ptr<long[]> buffer{new long[buffer_size]};
-      long *buffer_start = buffer.get(),
-           *buffer_end = buffer.get() + buffer_size;
+
+      long *buffer = utils::allocate<long>(buffer_size);
+      long *buffer_start = buffer, *buffer_end = buffer + buffer_size;
       std::iota(buffer_start, buffer_end, 0L);
       for (long i = 0; i < n; i++) {
         auto a_base = a.fbegin() + ith;
-        pdqsort(buffer.get(), buffer.get() + buffer_size,
+        sorter(buffer, buffer + buffer_size,
                 [a_base, stepper](long i1, long i2) {
                   return a_base[i1 * stepper] < a_base[i2 * stepper];
                 });
@@ -69,12 +66,30 @@ namespace numpy
           ith = ++nth;
         }
       }
+      utils::deallocate(buffer);
     }
     return indices;
   }
 
+  template <class T, class pS>
+  types::ndarray<long, pS> argsort(types::ndarray<T, pS> const &a, long axis, types::none_type) {
+    return _argsort(a, axis, ndarray::quicksorter());
+  }
+
+  template <class T, class pS>
+  types::ndarray<long, pS> argsort(types::ndarray<T, pS> const &a, long axis, types::str const& kind)
+  {
+      if (kind == "mergesort")
+        return _argsort(a, axis, ndarray::mergesorter());
+      else if (kind == "heapsort")
+        return _argsort(a, axis, ndarray::heapsorter());
+      else if (kind == "stable")
+        return _argsort(a, axis, ndarray::stablesorter());
+      return _argsort(a, axis, ndarray::quicksorter());
+  }
+
   NUMPY_EXPR_TO_NDARRAY0_IMPL(argsort);
-}
+} // namespace numpy
 PYTHONIC_NS_END
 
 #endif

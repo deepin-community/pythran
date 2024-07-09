@@ -10,7 +10,6 @@ from pythran.typing import NDArray, List
 np_version = version.parse(numpy.version.version)
 
 
-@TestEnv.module
 class TestNumpyFunc1(TestEnv):
 
     def test_sum_bool2(self):
@@ -52,7 +51,7 @@ class TestNumpyFunc1(TestEnv):
     @unittest.skipIf(sys.maxsize == (2**31 - 1), "overflow test")
     def test_sum12_(self):
         self.run_test("def np_sum12_(a): import numpy as np ; return np.sum(a)",
-                      numpy.array([2**32-1, -2**32 +1 , -2**32 + 1], dtype=numpy.uint32), np_sum12_=[NDArray[numpy.uint32,:]])
+                      numpy.array([2**32-1, 2**31 +1 , 2**31 + 1], dtype=numpy.uint32), np_sum12_=[NDArray[numpy.uint32,:]])
 
     def test_sum13_(self):
         self.run_test("def np_sum13_(a): import numpy as np ; return np.sum(a)",
@@ -61,7 +60,7 @@ class TestNumpyFunc1(TestEnv):
     @unittest.skipIf(sys.maxsize == (2**31 - 1), "overflow test")
     def test_sum14_(self):
         self.run_test("def np_sum14_(a): import numpy as np ; return np.sum(a)",
-                      numpy.array([2**31-1, 2**31 +1 , 2**31 + 1], dtype=numpy.int32), np_sum14_=[NDArray[numpy.int32,:]])
+                      numpy.array([2**30-1, 2**30 +1 , 2**30 + 1], dtype=numpy.int32), np_sum14_=[NDArray[numpy.int32,:]])
 
     def test_sum15_(self):
         self.run_test("def np_sum15_(a): import numpy as np ; return np.sum(a, dtype=int)",
@@ -241,11 +240,12 @@ class TestNumpyFunc1(TestEnv):
                       numpy.array([float("inf"), float("inf"), -float('inf')]),
                       np_allclose4=[NDArray[float,:]])
 
-    def test_alltrue0(self):
-        self.run_test("def np_alltrue0(b): from numpy import alltrue ; return alltrue(b)", numpy.array([True, False, True, True]), np_alltrue0=[NDArray[bool,:]])
+    if hasattr(numpy, 'alltrue'):  # disappeared in numpy 2.x
+        def test_alltrue0(self):
+            self.run_test("def np_alltrue0(b): from numpy import alltrue ; return alltrue(b)", numpy.array([True, False, True, True]), np_alltrue0=[NDArray[bool,:]])
 
-    def test_alltrue1(self):
-        self.run_test("def np_alltrue1(a): from numpy import alltrue ; return alltrue(a >= 5)", numpy.array([1, 5, 2, 7]), np_alltrue1=[NDArray[int,:]])
+        def test_alltrue1(self):
+            self.run_test("def np_alltrue1(a): from numpy import alltrue ; return alltrue(a >= 5)", numpy.array([1, 5, 2, 7]), np_alltrue1=[NDArray[int,:]])
 
     def test_count_nonzero0(self):
         self.run_test("def np_count_nonzero0(a): from numpy import count_nonzero; return count_nonzero(a)",
@@ -323,6 +323,56 @@ class TestNumpyFunc1(TestEnv):
                       numpy.array([9., 9., -9., -9.]),
                       numpy.array([2., -2., 2., -2.]),
                       np_remainder0=[NDArray[float,:], NDArray[float,:]])
+
+    def test_vectorize0(self):
+        self.run_test("""
+            def np_vectorize0(x):
+                from numpy import vectorize;
+                return vectorize(lambda x: x + 1)(x)""",
+                      numpy.array([1, 2, 3, 4]),
+                      np_vectorize0=[NDArray[int , :]])
+
+    def test_vectorize1(self):
+        self.run_test("""
+            def np_vectorize1(x):
+                from numpy import vectorize;
+                return vectorize(lambda x: x + 1)(x)""",
+                      5,
+                      np_vectorize1=[int])
+
+    def test_vectorize2(self):
+        self.run_test("""
+            def np_vectorize2(x):
+                from numpy import vectorize;
+                return vectorize(lambda x: x + 1)(x)""",
+                      5j,
+                      np_vectorize2=[complex])
+
+    def test_vectorize3(self):
+        self.run_test("""
+            def np_vectorize3(x):
+                from numpy import vectorize;
+                return vectorize(lambda x: x + 1j)(x)""",
+                      numpy.array([1., 2., 3., 4.]),
+                      np_vectorize3=[NDArray[float , :]])
+
+    def test_vectorize4(self):
+        self.run_test("""
+            def np_vectorize4(x):
+                from numpy import vectorize;
+                from operator import add
+                return vectorize(add)(x, 9.)""",
+                      numpy.array([1, 2, 3, 4]),
+                      np_vectorize4=[NDArray[int , :]])
+
+    def test_vectorize5(self):
+        self.run_test("""
+            def np_vectorize5(x):
+                from numpy import vectorize;
+                v = vectorize(lambda x, y: x + 3 * y)
+                return v(x, x), v(x, 1)""",
+                      numpy.array([1, 2, 3, 4]),
+                      np_vectorize5=[NDArray[int , :]])
 
     def test_numpy_ones_list(self):
         self.run_test(

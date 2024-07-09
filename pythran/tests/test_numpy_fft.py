@@ -2,10 +2,9 @@ import unittest
 from pythran.tests import TestEnv
 import numpy
 from pythran.typing import NDArray
-from distutils.version import LooseVersion
+from packaging.version import Version
 
 
-@TestEnv.module
 class TestNumpyRFFT(TestEnv):
 
     # Basic test
@@ -18,8 +17,11 @@ class TestNumpyRFFT(TestEnv):
         self.run_test("def test_rfft_2(x,n): from numpy.fft import rfft ; return rfft(x,n)", numpy.arange(0,8.),9, test_rfft_2=[NDArray[float,:],int])
     def test_rfft_3(self):
         self.run_test("def test_rfft_3(x,n): from numpy.fft import rfft ; return rfft(x,n)", numpy.arange(0,8.),7, test_rfft_3=[NDArray[float,:],int])
+
+    @unittest.skipIf(Version(numpy.__version__) >= Version('2'), "see https://github.com/numpy/numpy/issues/26349")
     def test_rfft_4(self):
         self.run_test("def test_rfft_4(x,n): from numpy.fft import rfft ; return rfft(x,n)", numpy.arange(0,8.),6, test_rfft_4=[NDArray[float,:],int])
+
     def test_rfft_5(self):
         self.run_test("def test_rfft_5(x,n): from numpy.fft import rfft ; return rfft(x,n)", numpy.arange(0,8.),10, test_rfft_5=[NDArray[float,:],int])
 
@@ -71,7 +73,6 @@ def test_rfft_12(x):
         self.run_test("def test_rfft_byte(x): from numpy.fft import rfft ; return rfft(x)", (100*numpy.random.random(128)).astype(numpy.byte), test_rfft_byte=[NDArray[numpy.byte,:]])
 
 
-@TestEnv.module
 class TestNumpyFFTN(TestEnv):
 
     # Basic test
@@ -131,7 +132,7 @@ class TestNumpyFFTN(TestEnv):
 
     # Various norms
 
-    @unittest.skipIf(LooseVersion(numpy.__version__) <'1.20', "introduced in 1.20")
+    @unittest.skipIf(Version(numpy.__version__) < Version('1.20'), "introduced in 1.20")
     def test_fftn_12(self):
         self.run_test("def test_fftn_12(x): from numpy.fft import fftn ; return fftn(x, (6,), norm='backward')",
                       numpy.arange(0,8), test_fftn_12=[NDArray[int,:]])
@@ -139,7 +140,7 @@ class TestNumpyFFTN(TestEnv):
         self.run_test("def test_fftn_13(x): from numpy.fft import fftn ; return fftn(x, (8,), norm='ortho')",
                       numpy.arange(0,8.), test_fftn_13=[NDArray[float,:]])
 
-    @unittest.skipIf(LooseVersion(numpy.__version__) <'1.20', "introduced in 1.20")
+    @unittest.skipIf(Version(numpy.__version__) < Version('1.20'), "introduced in 1.20")
     def test_fftn_14(self):
         self.run_test("def test_fftn_14(x): from numpy.fft import fftn ; return fftn(x, (10,), norm='forward')",
                       numpy.arange(0, 8.) + 1.j, test_fftn_14=[NDArray[complex,:]])
@@ -175,7 +176,6 @@ class TestNumpyFFTN(TestEnv):
         self.run_test("def test_fftn_22(x): from numpy.fft import fftn ; return fftn(x, (10,), axes=(2,))",
                       numpy.arange(0, 24.).reshape(2, 4, 3) + 1.j, test_fftn_22=[NDArray[complex,:,:, :]])
 
-@TestEnv.module
 class TestNumpyIRFFT(TestEnv):
     ############# IRFFT
     # Basic test
@@ -245,7 +245,6 @@ def test_irfft_12(x):
     def test_irfft_byte(self):
         self.run_test("def test_irfft_byte(x): from numpy.fft import irfft ; return irfft(x)", (100*numpy.random.random(128)).astype(numpy.byte), test_irfft_byte=[NDArray[numpy.byte,:]])
 
-@TestEnv.module
 class TestNumpyIHFFT(TestEnv):
 
     # Basic test
@@ -258,8 +257,11 @@ class TestNumpyIHFFT(TestEnv):
         self.run_test("def test_ihfft_2(x,n): from numpy.fft import ihfft ; return ihfft(x,n)", numpy.arange(0,8.),9, test_ihfft_2=[NDArray[float,:],int])
     def test_ihfft_3(self):
         self.run_test("def test_ihfft_3(x,n): from numpy.fft import ihfft ; return ihfft(x,n)", numpy.arange(0,8.),7, test_ihfft_3=[NDArray[float,:],int])
+
+    @unittest.skipIf(Version(numpy.__version__) >= Version('2'), "see https://github.com/numpy/numpy/issues/26349")
     def test_ihfft_4(self):
         self.run_test("def test_ihfft_4(x,n): from numpy.fft import ihfft ; return ihfft(x,n)", numpy.arange(0,8.),6, test_ihfft_4=[NDArray[float,:],int])
+
     def test_ihfft_5(self):
         self.run_test("def test_ihfft_5(x,n): from numpy.fft import ihfft ; return ihfft(x,n)", numpy.arange(0,8.),10, test_ihfft_5=[NDArray[float,:],int])
 
@@ -311,7 +313,6 @@ def test_ihfft_12(x):
         self.run_test("def test_ihfft_byte(x): from numpy.fft import ihfft ; return ihfft(x)", (100*numpy.random.random(128)).astype(numpy.byte), test_ihfft_byte=[NDArray[numpy.byte,:]])
 
 
-@TestEnv.module
 class TestNumpyHFFT(TestEnv):
     ############# hfft
     # Basic test
@@ -383,7 +384,6 @@ def test_hfft_12(x):
     def test_hfft_byte(self):
         self.run_test("def test_hfft_byte(x): from numpy.fft import hfft ; return hfft(x)", (100*numpy.random.random(128)).astype(numpy.byte), test_hfft_byte=[NDArray[numpy.byte,:]])
 
-@TestEnv.module
 class TestNumpyFFT(TestEnv):
     # complex inputs
     def test_fft_1d_1(self):
@@ -575,7 +575,6 @@ class TestNumpyFFT(TestEnv):
             return np.concatenate(out)
         """, (numpy.random.randn(512)).reshape((4,128)).astype(numpy.int64), test_fft_int64_parallel=[NDArray[numpy.int64, :, :]])
 
-@TestEnv.module
 class TestNumpyIFFT(TestEnv):
     # complex inputs
     def test_ifft_1d_1(self):

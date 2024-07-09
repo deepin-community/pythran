@@ -29,7 +29,7 @@ The generated native ``.so`` module can then be used with the Python interpreter
 Pythran version can be dumped through ``--version``::
 
   $> pythran --version 2>&1
-  0.14.0
+  0.16.1
 
 The module-level ``__pythran__`` variable indicates that the module loaded has been pythranized::
 
@@ -77,6 +77,7 @@ To know more options about Pythran, you can check::
   usage: pythran [-h] [-o OUTPUT_FILE] [-P] [-E] [-e] [-v] [-w] [-V] [-p pass]
                  [-I include_dir] [-L ldflags] [-D macro_definition]
                  [-U macro_definition] [--config config] [-ftime-report]
+                 [--trace-allocations]
                  input_file
   
   pythran: a python to C++ compiler
@@ -103,5 +104,6 @@ To know more options about Pythran, you can check::
     -U macro_definition  any macro undef relevant to the underlying C++ compiler
     --config config      config additional params
     -ftime-report        report time spent in each optimization/transformation
+    --trace-allocations  instrument execution to trace memory allocations
   
   It's a megablast!

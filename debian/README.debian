@@ -10,8 +10,8 @@ available implementations).
 In order to use a specific BLAS implementation:
 1. install the desired implementation [2]
 2. optionally, update the ".pythranrc" file by setting the
-   corresponding value to the "blas" entry (validd values are "none",
-   "pythran-openblas", "blas", "openblas", "atlas" or "mkl") in order
+   corresponding value to the "blas" entry (valid values are "none",
+   "pythran-openblas", "blas", "openblas", 'blis' or "mkl") in order
    to bypass the automatic detection.
 
 [1] https://pythran.readthedocs.io/en/latest/MANUAL.html#compiler

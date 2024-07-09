@@ -4,7 +4,6 @@ import numpy
 from pythran.typing import NDArray
 
 
-@TestEnv.module
 class TestNumpyLinalg(TestEnv):
 
     def test_linalg_norm0(self):
@@ -45,7 +44,7 @@ class TestNumpyLinalg(TestEnv):
                       b = a.reshape((3, 3))
                       c = np.array([[ 1, 2, 3], [-1, 1, x]])
                       return (LA.norm(a), LA.norm(b),
-                              LA.norm(a, np.Inf), #LA.norm(b, np.inf),
+                              LA.norm(a, np.inf), #LA.norm(b, np.inf),
                               LA.norm(a, -np.inf), #LA.norm(b, -np.inf),
                               LA.norm(a, 1), #LA.norm(b, 1),
                               LA.norm(a, -1), #LA.norm(b, -1),

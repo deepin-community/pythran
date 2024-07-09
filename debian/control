@@ -6,7 +6,8 @@ Uploaders: Diego M. Rodriguez <diego@moreda.io>
 Build-Depends:
  debhelper-compat (=13),
  dh-python,
- libblas-dev | libopenblas-dev | libatlas-base-dev | libblas.so,
+ pybuild-plugin-pyproject,
+ libblas-dev | libopenblas-dev | libblis-dev | libblas.so,
  libboost-dev,
  libxsimd-dev (>= 10.0.0~),
  python3-all-dev,
@@ -19,7 +20,10 @@ Build-Depends:
  python3-pytest <!nocheck>,
  python3-setuptools,
  python3-sphinx <!nodoc>,
-Standards-Version: 4.6.2
+Build-Depends-Indep:
+ python3-nbsphinx <!nodoc>,
+ pandoc <!nodoc>
+Standards-Version: 4.7.0
 Homepage: https://github.com/serge-sans-paille/pythran
 Vcs-Git: https://salsa.debian.org/python-team/packages/pythran.git
 Vcs-Browser: https://salsa.debian.org/python-team/packages/pythran
@@ -29,9 +33,10 @@ Package: python3-pythran
 Architecture: any
 Depends:
  g++ | c++-compiler,
- libopenblas-dev | libatlas-base-dev | libblas-dev | libblas.so,
+ libopenblas-dev | libblis-dev | libblas-dev | libblas.so,
  libboost-dev,
  python3-all-dev,
+ python3-setuptools,
  libxsimd-dev (>= 10.0.0~),
  ${misc:Depends},
  ${python3:Depends},
