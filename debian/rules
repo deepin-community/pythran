@@ -16,9 +16,6 @@ export PYBUILD_AFTER_TEST=rm -r {build_dir}/pythran/tests; rm -f {build_dir}/tes
 # Llimit the testing to one file, as the full test suite is very time
 # consuming.
 export PYBUILD_TEST_ARGS=pythran/tests/test_base.py
-# Disable copying third party libraries during build and install.
-export PYBUILD_BUILD_ARGS=build_py --no-boost --no-xsimd
-export PYBUILD_INSTALL_ARGS=build_py --no-boost --no-xsimd
 
 empty :=
 space := $(empty)$(empty)

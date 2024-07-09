@@ -2,9 +2,9 @@ Format: https://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
 Upstream-Name: pythran
 Upstream-Contact: Serge Guelton <serge.guelton@telecom-bretagne.eu>
 Source: https://github.com/serge-sans-paille/pythran
-Files-Excluded: third_party docs/papers logo.svg
+Files-Excluded: pythran/boost pythran/xsimd  docs/papers logo.svg
 Comment:
- The "third_party" directory contains vendored copies of boost and xsimd.
+ boost and xsimd are third-party code provied by their own packages in debian.
  The "docs/papers" directory contains documentation not used by the package.
  The "logo.svg" file is under a CC-NC license.
 

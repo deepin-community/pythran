@@ -1,5 +1,5 @@
 Tests: upstream-tests, pythran-test-cases
-Depends: @, python3-all, python3-pytest, python3-scipy, libatlas-base-dev
+Depends: @, python3-all, python3-pytest, python3-scipy, libblis-dev
 
 # Needs root for update-alternatives.
 Tests: pythran-openblas

@@ -2,8 +2,6 @@ from pythran.tests import TestEnv
 from pythran.typing import NDArray, Tuple, List
 
 import numpy
-from distutils.version import LooseVersion
-
 import unittest
 
 try:
@@ -25,7 +23,6 @@ def raisesMemoryError():
         return False
 
 
-@TestEnv.module
 class TestNdarray(TestEnv):
 
     @unittest.skipIf(not raisesMemoryError(), "memory error not triggered on that arch")
@@ -54,6 +51,11 @@ class TestNdarray(TestEnv):
         self.run_test('def ndarray_uintp(a): import numpy as np; return np.uintp(a), np.array([a, a], dtype=np.uintp)',
                       numpy.uintp(5),
                       ndarray_uintp=[numpy.uintp])
+
+    def test_ndarray_bool(self):
+        self.run_test('def ndarray_bool(b): import numpy as np; return np.bool_(b), np.array([b], dtype=np.bool_)',
+                      numpy.bool_(5),
+                      ndarray_bool=[bool])
 
     def test_ndarray_real_attr_read(self):
         self.run_test('def ndarray_real_attr_read(a): return a.real + 1',
@@ -104,6 +106,16 @@ class TestNdarray(TestEnv):
         self.run_test('def ndarray_imag_vexpr_read(a): import numpy as np ; return a[np.argsort(a)].imag',
                       1j * numpy.arange(10, dtype=numpy.complex128),
                       ndarray_imag_vexpr_read=[NDArray[complex, :]])
+
+    def test_ndarray_real_iexpr_read(self):
+        self.run_test('def ndarray_real_iexpr_read(a): return a[1].real',
+                      numpy.arange(10, dtype=numpy.complex128),
+                      ndarray_real_iexpr_read=[NDArray[complex, :]])
+
+    def test_ndarray_imag_iexpr_read(self):
+        self.run_test('def ndarray_imag_iexpr_read(a): return a[1].imag',
+                      1j * numpy.arange(10, dtype=numpy.complex128),
+                      ndarray_imag_iexpr_read=[NDArray[complex, :]])
 
     def test_numpy_augassign0(self):
         self.run_test('def numpy_augassign0(a): a+=1; return a',
@@ -716,6 +728,40 @@ def newaxis8(n):
                       30,
                       gexpr_composition22=[int])
 
+    def test_gexpr_vexpr0(self):
+        self.run_test("def gexpr_vexpr0(x, y): x[1:3] = x[y]",
+                      numpy.arange(10), numpy.array([0, 1]),
+                      gexpr_vexpr0=[NDArray[int,:], NDArray[int, :]])
+
+    def test_gexpr_vexpr1(self):
+        self.run_test("def gexpr_vexpr1(x, y): x[1:3] = y[y]",
+                      numpy.arange(10), numpy.array([0, 1]),
+                      gexpr_vexpr1=[NDArray[int,:], NDArray[int, :]])
+
+    def test_gexpr_baseid0(self):
+        self.run_test("def gexpr_baseid0(x, y): x[1:3] = y[0]",
+                      numpy.arange(10), numpy.array([[0, 1]]),
+                      gexpr_baseid0=[NDArray[int,:], NDArray[int, :, :]])
+
+    def test_gexpr_baseid1(self):
+        self.run_test("def gexpr_baseid1(x, y): x[:] = y.T",
+                      numpy.arange(4).reshape(2,2), numpy.array([[0, 1], [2, 3]]),
+                      gexpr_baseid1=[NDArray[int,:,:], NDArray[int, :, :]])
+
+    def test_gexpr_baseid2(self):
+        code = """
+import numpy as np
+def gexpr_baseid2(N):
+    B = np.zeros((N,N), dtype=int)
+    A = [[0] for ii in range(N)]
+    for ii in range(len(A)):
+        a = len(A[ii])
+        B[ii, 0:a] = A[ii][0:a]
+    return B
+        """
+        self.run_test(code,
+                      100,
+                      gexpr_baseid2=[int])
 
     def test_gexpr_copy0(self):
         self.run_test("def gexpr_copy0(a,b): a[:,0] = b[:,0]; return a",

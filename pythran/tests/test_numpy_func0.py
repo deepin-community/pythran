@@ -7,7 +7,6 @@ import os
 from pythran.typing import NDArray, List, Tuple
 
 
-@TestEnv.module
 class TestNumpyFunc0(TestEnv):
 
     def test_extended_sum0(self):
@@ -118,7 +117,8 @@ class TestNumpyFunc0(TestEnv):
         self.run_test("def np_nansum0(a): import numpy as np  ; return np.nansum(a)" , numpy.array([[1, 2], [3, numpy.nan]]), np_nansum0=[NDArray[float,:,:]])
 
     def test_nansum1(self):
-        self.run_test("def np_nansum1(a): import numpy as np ; return np.nansum(a)" , numpy.array([[1, 2], [numpy.NINF, numpy.nan]]), np_nansum1=[NDArray[float,:,:]])
+        self.run_test("def np_nansum1(a): import numpy as np ; return np.nansum(a)",
+                      numpy.array([[1, 2], [-numpy.inf, numpy.nan]]), np_nansum1=[NDArray[float,:,:]])
 
     def test_nansum2(self):
         self.run_test("def np_nansum2(a): import numpy as np ; return np.nansum(a)", [1., numpy.nan], np_nansum2=[List[float]])
@@ -127,7 +127,8 @@ class TestNumpyFunc0(TestEnv):
         self.run_test("def np_nanmin0(a): import numpy as np ; return np.nanmin(a)" , numpy.array([[1, 2], [3, numpy.nan]]), np_nanmin0=[NDArray[float,:,:]])
 
     def test_nanmin1(self):
-        self.run_test("def np_nanmin1(a): import numpy as np ; return np.nanmin(a)" , numpy.array([[1, 2], [numpy.NINF, numpy.nan]]), np_nanmin1=[NDArray[float,:,:]])
+        self.run_test("def np_nanmin1(a): import numpy as np ; return np.nanmin(a)",
+                      numpy.array([[1, 2], [-numpy.inf, numpy.nan]]), np_nanmin1=[NDArray[float,:,:]])
 
     def test_nanmin2(self):        
          self.run_test("def np_nanmin2(a): import numpy as np ; return np.nanmin(a)" , numpy.array([[numpy.nan, numpy.nan], [numpy.nan, numpy.nan]]), np_nanmin2=[NDArray[float,:,:]])
@@ -390,14 +391,15 @@ def np_rosen_der(x):
     def test_lexsort2(self):
         self.run_test("def np_lexsort2(a): from numpy import lexsort ; return lexsort((a+1,a-1))", numpy.array([1,5,1,4,3,4,4]), np_lexsort2=[NDArray[int,:]])
 
-    def test_issctype0(self):
-        self.run_test("def np_issctype0(): from numpy import issctype, int32 ; a = int32 ; return issctype(a)", np_issctype0=[])
+    if hasattr(numpy, 'issctype'):  # no longer supported in numpy 2.x
+        def test_issctype0(self):
+            self.run_test("def np_issctype0(): from numpy import issctype, int32 ; a = int32 ; return issctype(a)", np_issctype0=[])
 
-    def test_issctype1(self):
-        self.run_test("def np_issctype1(): from numpy import issctype ; a = list ; return issctype(a)", np_issctype1=[])
+        def test_issctype1(self):
+            self.run_test("def np_issctype1(): from numpy import issctype ; a = list ; return issctype(a)", np_issctype1=[])
 
-    def test_issctype2(self):
-        self.run_test("def np_issctype2(a): from numpy import issctype ; return issctype(a)", 3.1, np_issctype2=[float])
+        def test_issctype2(self):
+            self.run_test("def np_issctype2(a): from numpy import issctype ; return issctype(a)", 3.1, np_issctype2=[float])
 
     def test_isscalar0(self):
         self.run_test("def np_isscalar0(a): from numpy import isscalar ; return isscalar(a)", 3.1, np_isscalar0=[float])
@@ -571,11 +573,13 @@ def np_rosen_der(x):
     def test_place1(self):
         self.run_test("def np_place1(x): from numpy import place ; place(x, x>1, [57, 58]); return x", numpy.arange(6).reshape((2,3)), np_place1=[NDArray[int,:,:]])
 
-    def test_product(self):
-        self.run_test("def np_product(x):\n from numpy import product\n return product(x)", numpy.arange(1, 10), np_product=[NDArray[int,:]])
+    if hasattr(numpy, 'product'):
+        def test_product(self):
+            self.run_test("def np_product(x):\n from numpy import product\n return product(x)", numpy.arange(1, 10), np_product=[NDArray[int,:]])
 
-    def test_ptp0(self):
-        self.run_test("def np_ptp0(x): return x.ptp()", numpy.arange(4).reshape((2,2)), np_ptp0=[NDArray[int,:,:]])
+    if hasattr(numpy.ndarray((1)), 'ptp'):
+        def test_ptp0(self):
+            self.run_test("def np_ptp0(x): return x.ptp()", numpy.arange(4).reshape((2,2)), np_ptp0=[NDArray[int,:,:]])
 
     def test_ptp1(self):
         self.run_test("def np_ptp1(x): from numpy import ptp ; return ptp(x,0)", numpy.arange(4).reshape((2,2)), np_ptp1=[NDArray[int,:,:]])
@@ -759,14 +763,15 @@ def np_ravel3(v):
     def test_select0(self):
         self.run_test("def np_select0(x): from numpy import select; condlist = [x<3, x>5]; choicelist = [x, x**2]; return select(condlist, choicelist)", numpy.arange(10), np_select0=[NDArray[int,:]])
 
-    def test_sometrue0(self):
-        self.run_test("def np_sometrue0(a): from numpy import sometrue ; return sometrue(a)", numpy.array([[True, False], [True, True]]), np_sometrue0=[NDArray[bool,:,:]])
+    if hasattr(numpy, 'sometrue'):
+        def test_sometrue0(self):
+            self.run_test("def np_sometrue0(a): from numpy import sometrue ; return sometrue(a)", numpy.array([[True, False], [True, True]]), np_sometrue0=[NDArray[bool,:,:]])
 
-    def test_sometrue1(self):
-        self.run_test("def np_sometrue1(a): from numpy import sometrue ; return sometrue(a, 0)", numpy.array([[True, False], [False, False]]), np_sometrue1=[NDArray[bool,:,:]])
+        def test_sometrue1(self):
+            self.run_test("def np_sometrue1(a): from numpy import sometrue ; return sometrue(a, 0)", numpy.array([[True, False], [False, False]]), np_sometrue1=[NDArray[bool,:,:]])
 
-    def test_sometrue2(self):
-        self.run_test("def np_sometrue2(a): from numpy import sometrue ; return sometrue(a)", [-1, 0, 5], np_sometrue2=[List[int]])
+        def test_sometrue2(self):
+            self.run_test("def np_sometrue2(a): from numpy import sometrue ; return sometrue(a)", [-1, 0, 5], np_sometrue2=[List[int]])
 
     def test_sort0(self):
         self.run_test("def np_sort0(a): from numpy import sort ; return sort(a)", numpy.array([[1,6],[7,5]]), np_sort0=[NDArray[int,:,:]])

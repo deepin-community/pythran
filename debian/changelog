@@ -1,3 +1,113 @@
+pythran (0.16.1+ds-3) unstable; urgency=medium
+
+  * Team upload.
+  * update debian/tests
+    - remove repetition of DEB_HOST_ARCH setting
+    - riscv64: run all tests on default python only
+
+ -- Drew Parsons <dparsons@debian.org>  Fri, 31 May 2024 00:07:35 +0200
+
+pythran (0.16.1+ds-2) unstable; urgency=medium
+
+  * Team upload.
+  * debian/tests: run riscv64 tests on default python only
+
+ -- Drew Parsons <dparsons@debian.org>  Wed, 29 May 2024 14:43:54 +0200
+
+pythran (0.16.1+ds-1) unstable; urgency=medium
+
+  * Team upload.
+  * New upstream release
+    - fixes significant memory leak in ndarray from 0.16.0
+
+ -- Drew Parsons <dparsons@debian.org>  Wed, 29 May 2024 10:03:34 +0200
+
+pythran (0.16.0+ds-3) unstable; urgency=medium
+
+  * Team upload.
+  * on riscv64 run only a third of test cases in pythran-test-cases
+
+ -- Drew Parsons <dparsons@debian.org>  Tue, 28 May 2024 15:29:58 +0200
+
+pythran (0.16.0+ds-2) unstable; urgency=medium
+
+  * Team upload.
+  * fix arch for riscv64 test restrictions
+
+ -- Drew Parsons <dparsons@debian.org>  Mon, 27 May 2024 09:39:02 +0200
+
+pythran (0.16.0+ds-1) unstable; urgency=medium
+
+  * Team upload.
+  * New upstream release.
+  * Standards-Version: 4.7.0
+
+ -- Drew Parsons <dparsons@debian.org>  Sun, 26 May 2024 10:50:24 +0200
+
+pythran (0.15.0+ds-3) unstable; urgency=medium
+
+  * Team upload.
+  * debian/tests: riscv64 runs extremely slowly such that the test
+    session times out, so use a restricted subset
+
+ -- Drew Parsons <dparsons@debian.org>  Wed, 15 May 2024 20:19:12 +0200
+
+pythran (0.15.0+ds-2) unstable; urgency=medium
+
+  * Team upload.
+  * move python3-nbsphinx, pandoc to Build-Depends-Indep
+    (pandoc is not available on all arches)
+  * refresh manpages (debian/rules help2man)
+
+ -- Drew Parsons <dparsons@debian.org>  Mon, 15 Jan 2024 12:49:50 +0100
+
+pythran (0.15.0+ds-1) unstable; urgency=medium
+
+  * Team upload.
+  * New upstream release.
+    - supports Python 3.12. Drop debian patch python_3.12_258ab9a.diff
+    - now uses pyproject.toml. Build-Depends: pybuild-plugin-pyproject
+      Deprecated debian patch
+      0002-Exclude-pythran-pythonic-patch-README.rst.patch
+  * update debian/copyright. boost and xsimd (third-party source to be
+    excluded from the source tarball) are now placed in the pythran
+    dir in the upstream tarball.
+  * enable doc build with nbsphinx
+    - Build-Depends: python3-nbsphinx, pandoc <!nodoc>
+    - drop debian patch
+      0005-Disable-jupyter-based-documentation-examples.patch
+  * debian/rules: drop deprecated build args --no-boost --no-xsimd
+
+ -- Drew Parsons <dparsons@debian.org>  Mon, 15 Jan 2024 02:42:25 +0100
+
+pythran (0.14.0+ds-5) unstable; urgency=medium
+
+  * Team upload.
+  * python3-pythran Depends: python3-setuptools.
+    No longer automatically included in python 3.12. Closes: #1059634.
+
+ -- Drew Parsons <dparsons@debian.org>  Fri, 12 Jan 2024 03:44:08 +0100
+
+pythran (0.14.0+ds-4) unstable; urgency=medium
+
+  * Team upload.
+  * update debian config files and tests to replace libatlas-base-dev
+    references to libblis-dev (since atlas is deprecated and openblas
+    is not available on armel)
+
+ -- Drew Parsons <dparsons@debian.org>  Mon, 18 Dec 2023 02:18:32 +0100
+
+pythran (0.14.0+ds-3) unstable; urgency=medium
+
+  * Team upload.
+  * debian patch python_3.12_258ab9a.diff applies upstream
+    commit 258ab9a to support Python 3.12. Closes: #1056515.
+  * drop debian patch 0004-Enhance-atlas-auto-detection.patch.
+    The ATLAS BLAS implementation is deprecated, and its patch
+    interferes with application of the Python 3.12 patch.
+
+ -- Drew Parsons <dparsons@debian.org>  Sun, 17 Dec 2023 16:45:24 +0100
+
 pythran (0.14.0+ds-2) unstable; urgency=medium
 
   * Team upload.

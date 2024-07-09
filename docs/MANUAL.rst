@@ -284,7 +284,7 @@ Easy enough, isn't it?
 
 
 .pythran files
-**************
+--------------
 
 Instead of writing the export lines in the ``.py`` file, it is possible to
 write them, **without the #pythran** prefix, inside a file that has the same
@@ -294,7 +294,7 @@ file ``I_love.py`` can have its export lines in the ``I_love.pythran`` file, usi
     export function_name(argument_type*)
 
 Limitations
-***********
+-----------
 
 Pythran tries hard to produce code that has the same observable behavior as the original Python code.
 Unfortunately it's not always possible:
@@ -370,7 +370,7 @@ in the ``pyproject.toml`` file for your package:
         "pythran",
 
 Setuptools Integration
-``````````````````````
+**********************
 
 Pythran comes with a ``PythranExtension`` class that extends ``setuptools`` and
 can be used like this to compile Pythan modules into extension modules::
@@ -404,7 +404,7 @@ you can change its base class by using ``PythranBuildExt[base_cls]`` instead.
 
 
 Cross compilation
-`````````````````
+*****************
 
 Python does not have good support for cross compilation; neither does Pythran's
 CLI interface. Using the Python-to-C++ transpilation and using a build system
@@ -416,6 +416,28 @@ matter whether it is installed in the build or host environment. The exception
 is the ``pythran-config`` tool - only use that if ``pythran`` is installed in
 the host architecture (i.e., the architecture on which the produced binaries
 need to run).
+
+Generating Ufuncs
+-----------------
+
+Pythran can be used to turn a function operating on scalars into a `ufunc
+<https://numpy.org/doc/stable/reference/ufuncs.html>`_ that can operate on
+arrays and scalar, honoring Numpy's broadcasting rules. A special spec
+decoration is used to achieve that goal::
+
+    #pythran export ufunc foo(double, double)
+
+This line commands Pythran to generate a *ufunc* that takes two array-like
+inputs whose *dtype* are double precision floats.
+
+It is possible to support multiple signatures, as in::
+
+    #pythran export ufunc foo(float32, float32)
+    #pythran export ufunc foo(float64, float64)
+    #pythran export ufunc foo(uint64, uint64)
+
+Pythran only supports generation of *ufunc* for functions that produce a single
+scalar, the type of which is automatically inferred.
 
 
 Capsule Corp
@@ -459,10 +481,6 @@ One can use ``-o <filename>`` or ``--output=<filename>`` to control the name of
 the generated file. If ``<filename>`` contains the ``%{ext}`` pattern, it is
 replaced by the extension that matches your current platform.
 
-A failing compilation? A lust for c++ tangled code? Give a try to the ``-E``
-switch that stops the compilation process right after c++ code generation, so
-that you can inspect it.
-
 Want more performance? Big fan of ``-Ofast -march=native``? Pythran
 _automagically_ forwards these switches to the underlying compiler!
 
@@ -500,7 +518,7 @@ This variable is a tuple that holds three fields:
 
 
 Adding OpenMP directives
-------------------------
+************************
 
 OpenMP is a standard set of directives for C, C++ and FORTRAN that makes it
 easier to turn a sequential program into a multi-threaded one. Pythran
@@ -522,7 +540,7 @@ which runs a code analyzer that displays extra information concerning parallel `
 
 
 Getting Pure C++
-----------------
+****************
 
 Pythran can be used to generate raw templated C++ code, without any Python
 glue. To do so use the ``-e`` switch. It will turn the Python code into C++
@@ -530,8 +548,8 @@ code you can call from a C++ program. In that case there is **no** need for a
 particular Pythran specification.
 
 
-Read the optimized Python code
-------------------------------
+Understanding the optimized Python code
+***************************************
 
 Curious Python developers might want to study how Pythran transforms their
 codes.  With the ``-P`` switch, Pythran optimizes the Python code, prints the
@@ -540,9 +558,24 @@ formatter is often useful::
 
     $> pythran -P arc_distance.py | yapf
 
+The ``-E`` switch stops the compilation process right after c++ code generation, so
+that you can inspect it::
+
+    $> pythran -E arc_distance.py
+
+In the example above, an ``arc_distance.cpp`` file is generated and it provides
+some pleasant code reading to the educated eyes. Setting the
+``backend.annotate`` option to ``true``, for instance through ``--config
+backend.annotate=true``, generates extra comments with hints on the origin of
+each statement.
+
+One can also trace every allocation within the generated kernel by passing
+``--trace-allocations`` to the compiler. When run, the resulting code dumps on
+the stanard error stream information about stack allocation and their origin.
+
 
 Customizing Your ``.pythranrc``
--------------------------------
+*******************************
 
 Pythran checks for a file named ``.pythranrc`` and use it to *replace* the site
 configuration. Here are a few tricks!
@@ -551,6 +584,9 @@ You can change the default location of the pythran configuration file using the
 environment variable ``PYTHRANRC``::
 
     PYTHRANRC=/opt/company/pythran/config.pythranrc pythran arc_distance.py
+
+When ``PYTHRANRC`` is set to the empty string, no user-site configuration is
+loaded. This can be helpful for reproducible builds.
 
 All the options in the ``.pythranrc`` file can be specified when running pythran by using the command line argument --config= .
 For example::
@@ -563,7 +599,7 @@ Options specified using command-line arguments override the options found in the
 
 
 ``[compiler]``
-**************
+++++++++++++++
 
 This section contains compiler flags configuration. For education purpose, the default linux configuration is
 
@@ -631,7 +667,7 @@ This section contains compiler flags configuration. For education purpose, the d
 
 
 ``[pythran]``
-*************
++++++++++++++
 
 This one contains internal configuration settings. Play with it at your own risk!
 
@@ -647,7 +683,7 @@ This one contains internal configuration settings. Play with it at your own risk
     multiplications. Not very portable, but generally works on Linux.
 
 ``[typing]``
-************
+++++++++++++
 
 Another internal setting stuff. This controls the accuracy of the typing phase. An extract from the default setting file should convince you not to touch it::
 
@@ -669,7 +705,7 @@ Another internal setting stuff. This controls the accuracy of the typing phase. 
     max_heterogeneous_sequence_size = 16
 
 ``[backend]``
-*************
++++++++++++++
 
 This controls some behavior of the C++ backend, so the default should be safe::
 

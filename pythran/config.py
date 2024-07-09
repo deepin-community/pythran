@@ -56,17 +56,22 @@ def get_paths_cfg(
                                             "pythran-default.cfg")
 
     user_config_path = os.environ.get('PYTHRANRC', None)
-    if not user_config_path:
+    if user_config_path is None:
         user_config_dir = os.environ.get('XDG_CONFIG_HOME', None)
         if not user_config_dir:
             user_config_dir = os.environ.get('HOME', None)
         if not user_config_dir:
             user_config_dir = '~'
-        user_config_path = os.path.expanduser(
-            os.path.join(user_config_dir, user_file))
-    return {"sys": sys_config_path,
-            "platform": platform_config_path,
-            "user": user_config_path}
+        user_config_path = os.path.expanduser(os.path.join(user_config_dir,
+                                                           user_file))
+
+    paths = {"sys": sys_config_path,
+             "platform": platform_config_path}
+
+    if user_config_path:
+        paths["user"] = user_config_path
+
+    return paths
 
 
 def init_cfg(sys_file, platform_file, user_file, config_args=None):
@@ -74,12 +79,14 @@ def init_cfg(sys_file, platform_file, user_file, config_args=None):
 
     sys_config_path = paths["sys"]
     platform_config_path = paths["platform"]
-    user_config_path = paths["user"]
+    user_config_path = paths.get("user")
 
     cfgp = ConfigParser()
     for required in (sys_config_path, platform_config_path):
         cfgp.read([required])
-    cfgp.read([user_config_path])
+
+    if user_config_path:
+        cfgp.read([user_config_path])
 
     if config_args is not None:
         update_cfg(cfgp, config_args)
@@ -153,10 +160,8 @@ def make_extension(python, **extra):
     cfg = init_cfg('pythran.cfg',
                    'pythran-{}.cfg'.format(sys.platform),
                    '.pythranrc',
-                   extra.get('config', None))
+                   extra.pop('config', None))
 
-    if 'config' in extra:
-        extra.pop('config')
 
     def parse_define(define):
         index = define.find('=')
@@ -240,32 +245,27 @@ def make_extension(python, **extra):
         except ImportError:
             logger.warning("Failed to find 'pythran-openblas' package. "
                            "Please install it or change the compiler.blas "
-                           "setting. Defaulting to 'blas'")
-            user_blas = 'blas'
-    elif user_blas == 'none':
+                           "setting. Defaulting to 'none'")
+            user_blas = 'none'
+
+    if user_blas == 'none':
         extension['define_macros'].append('PYTHRAN_BLAS_NONE')
 
     if user_blas not in reserved_blas_entries:
-        if sys.version_info < (3, 12):
-            # `numpy.distutils` not present for Python >= 3.12
-            try:
-                import numpy.distutils.system_info as numpy_sys
-                 # Numpy can pollute stdout with checks
-                with silent():
-                    numpy_blas = numpy_sys.get_info(user_blas)
-                    # required to cope with atlas missing extern "C"
-                    extension['define_macros'].append('PYTHRAN_BLAS_{}'
-                                                      .format(user_blas.upper()))
-                    extension['libraries'].extend(numpy_blas.get('libraries', []))
-                    extension['library_dirs'].extend(
-                        numpy_blas.get('library_dirs', []))
-                    extension['include_dirs'].extend(
-                        numpy_blas.get('include_dirs', []))
-            except Exception as exc:
-                raise RuntimeError(
-                    "The likely cause of this failure is an incompatibility "
-                    "between `setuptools` and `numpy.distutils. "
-                ) from exc
+        try:
+            import numpy.distutils.system_info as numpy_sys
+             # Numpy can pollute stdout with checks
+            with silent():
+                numpy_blas = numpy_sys.get_info(user_blas)
+                extension['libraries'].extend(numpy_blas.get('libraries', []))
+                extension['library_dirs'].extend(
+                    numpy_blas.get('library_dirs', []))
+        # `numpy.distutils` not present for Python >= 3.12
+        except ImportError:
+            blas = numpy.show_config('dicts')["Build Dependencies"]["blas"]
+            libblas = {'openblas64': 'openblas'}.get(blas['name'], blas['name'])
+            extension["libraries"].append(libblas)
+
 
     # final macro normalization
     extension["define_macros"] = [

@@ -1,16 +1,29 @@
-#!/bin/sh
+#!/bin/bash
 #
 # This autopkgtest runs only specific test files instead of the full
 # suite, as upstream test suite is very time consuming.
 
 set -e -u
 
+DEB_HOST_ARCH=$( dpkg-architecture -qDEB_HOST_ARCH )
+
+if [ "${DEB_HOST_ARCH}" = "riscv64" ] ; then
+    # riscv64 runs extremely slowly, run on default python only
+    PYVERS=$(py3versions -d)
+else
+    PYVERS=$(py3versions -s)
+fi
+
 # use XSIMD acceleration on supported architectures
 CXXFLAGS=
-DEB_HOST_ARCH=$( dpkg-architecture -qDEB_HOST_ARCH )
 case " amd64 arm64 i386 " in
   *\ ${DEB_HOST_ARCH}\ *)  export CXXFLAGS=-DUSE_XSIMD;;
 esac
+
+if [ "${DEB_HOST_ARCH}" = "i386" ] ; then
+    export CXXFLAGS="${CXXFLAGS} -march=native"
+fi
+
 
 TEST_FILES="test_cases.py"
 # * test_cases: suggested by upstream [1].
@@ -21,14 +34,40 @@ TEST_FILES="test_cases.py"
 # * loopy_jacob is excluded due to failing, seemingly related to:
 # https://github.com/serge-sans-paille/pythran/issues/1963
 
+declare -a SKIP_TEST_LIST
+
 # test_case test_multitype_run* fails with gcc-12, cf Bug#1016155,
 # see https://github.com/serge-sans-paille/pythran/issues/2011
-TEST_SELECTOR="not test_rbfinterp and not test_shallow_water and not test_compute_subpix_2d_gaussian2 and not loopy_jacob and not test_multitype_run"
+SKIP_TEST_LIST=(${SKIP_TEST_LIST[@]} test_rbfinterp test_shallow_water test_compute_subpix_2d_gaussian2 loopy_jacob test_multitype_run)
 
-DEB_HOST_ARCH=$(dpkg-architecture -qDEB_HOST_ARCH)
-if [ "${DEB_HOST_ARCH}" = "i386" ] ; then
-    export CXXFLAGS="${CXXFLAGS} -march=native"
+TEST_SELECTOR=""
+list_initialised=0
+for t in ${SKIP_TEST_LIST[@]}; do
+    if [ ${list_initialised} = 0 ]; then
+        TEST_SELECTOR=$t
+        list_initialised=1
+    else
+        TEST_SELECTOR="${TEST_SELECTOR} or $t"
+    fi
+done
+if [ "x${TEST_SELECTOR}" != "x" ]; then
+    TEST_SELECTOR="not ( ${TEST_SELECTOR} )"
 fi
+
+if [ "${DEB_HOST_ARCH}" = "riscv64" ] ; then
+    # riscv64 runs extremely slowly such that the test session times out
+    # so use a restricted subset
+    all_cases=($(cd pythran/tests/cases; ls *.py))
+    few_cases=${all_cases[0]%.py}
+    n=3  # only run every 3rd test case
+    for ((i=n-1; i<${#all_cases[@]}; i+=n)); do
+	few_cases="${few_cases} or ${all_cases[$i]%.py}"
+    done
+    TEST_SELECTOR="${few_cases} and ${TEST_SELECTOR}"
+    echo "On ${DEB_HOST_ARCH} only running ${few_cases}"
+fi
+
+echo "skipping tests with SKIP_TEST_LIST=${SKIP_TEST_LIST[@]}"
 
 # Copy upstream "pythran.tests" to a new package, as it is not part of
 # the installed packages but the test files import from it.
@@ -40,7 +79,7 @@ find . -type f -name "*.py" -print0 | xargs -0 sed -i 's|pythran\.tests|pythran_
 # package directory.
 sed -i 's|pythran/tests/rosetta/read_conf.cfg|rosetta/read_conf.cfg|g' rosetta/*
 
-for py in $(py3versions -s 2>/dev/null); do
+for py in ${PYVERS}; do
     echo "Running testsuite with $py using CXXFLAGS=${CXXFLAGS}"
     for test_file in $TEST_FILES; do
         $py -m pytest $test_file -k "${TEST_SELECTOR}"
